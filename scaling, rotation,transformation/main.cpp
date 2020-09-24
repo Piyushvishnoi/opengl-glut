@@ -1,0 +1,141 @@
+#define GL_SILENCE_DEPRECATION
+#include <GLUT/GLUT.h>  
+ 
+#include<iostream>
+#include<math.h>
+
+using namespace std;
+
+float x,x2,x3,y,y2,y3,tx,ty,theta,sx,sy,X, X2, X3, Y, Y2, Y3;
+int choice,choice2;
+
+void translate(float tx, float ty)
+{
+    X = x + tx;
+    X2 = x2 + tx;
+    X3 = x3 + tx;
+    
+    Y = y + ty;
+    Y2 = y2 + ty;
+    Y3 = y3 + ty;
+}
+
+void rotate(float theta)
+{
+    float theta_radians = (theta*3.142)/180;
+    
+    X = x*cos(theta_radians) - y*sin(theta_radians);
+    Y = x*sin(theta_radians) + y*cos(theta_radians);
+    
+    X2 = x2*cos(theta_radians) - y2*sin(theta_radians);
+    Y2 = x2*sin(theta_radians) + y2*cos(theta_radians);
+    
+    X3= x3*cos(theta_radians) - y3*sin(theta_radians);;
+    Y3 = x3*sin(theta_radians) + y3*cos(theta_radians);
+}
+
+void reflect(int choice2)
+{
+    if(choice2==1)
+    {
+        X = x;
+        Y = -y;
+        X2 = x2;
+        Y2 = -y2;
+        X3 = x3;
+        Y3 = -y3;
+    }
+    
+    else if(choice2==2)
+    {
+        X = -x;
+        Y = y;
+        X2 = -x2;
+        Y2 = y2;
+        X3 = -x3;
+        Y3 = y3;
+    }
+    
+    else
+    {
+        X = -x;
+        Y = -y;
+        X2 = -x2;
+        Y2 = -y2;
+        X3 = -x3;
+        Y3 = -y3;
+    }
+
+}
+void myInit (void)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    
+    gluOrtho2D(-25, 25, -25, 25);
+}
+
+void display (void)
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0,0.0,0.0);
+    
+    if(choice==1)
+    {
+        translate(tx,ty);
+    }
+    
+    else if(choice==2)
+    {
+        rotate(theta);
+    }
+    
+    else
+    {
+        reflect(choice2);
+    }
+    
+    glBegin(GL_TRIANGLES);
+        glVertex2f(X,Y);
+        glVertex2f(X2,Y2);
+        glVertex2f(X3,Y3);
+    glEnd();
+        
+    glFlush();
+}
+
+int main (int argc, char** argv)
+{
+    cout<<"Enter the vertices of the original triangle\n";
+    cin>>x>>y>>x2>>y2>>x3>>y3;
+    
+    cout<<"Enter your choice:\n1.Translation\n2.Rotation\n3.Reflection\n";
+    cin>>choice;
+    
+    switch(choice)
+    {
+        case 1: cout<<"Enter the translating factors for x and y\n";
+            cin>>tx>>ty;
+        break;
+        
+        case 2: cout<<"Enter the angle of rotation in degrees\n";
+            cin>>theta;
+        break;
+        
+        case 3: cout<<"1.Reflection about x-axis\n2.Reflection about y-axis\n3.Reflection about origin.\n";
+            cin>>choice2;
+        break;
+    }
+    
+    
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    
+    glutInitWindowSize(1366, 768);
+    glutInitWindowPosition(0, 0);
+    
+    glutCreateWindow("Transformation");
+    myInit();
+    glutDisplayFunc(display);
+    glutMainLoop();
+}
